@@ -10,8 +10,8 @@ sys.setdefaultencoding('utf-8')
 import xml.etree.ElementTree as et
 from optparse import OptionParser
 
-from globalconfig import *
-from xml_annotations import FrameAnnotation, SentenceAnnotation
+from .globalconfig import *
+from .xml_annotations import FrameAnnotation, SentenceAnnotation
 
 
 optpr = OptionParser()
