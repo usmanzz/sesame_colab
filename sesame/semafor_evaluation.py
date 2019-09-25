@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from optparse import OptionParser
 
-import conll09 as c9
-from dataio import *
+# import .conll09 as c9
+from .conll09 import *
+from .dataio import *
 
 
 def convert_conll_to_frame_elements(conllfile, fefile):
@@ -12,22 +13,22 @@ def convert_conll_to_frame_elements(conllfile, fefile):
     """
     examples, _, _ = read_conll(conllfile)
 
-    notanfe = c9.FEDICT.getid(EMPTY_FE)
+    notanfe = FEDICT.getid(EMPTY_FE)
     with codecs.open(fefile, "w", "utf-8") as outf:
 
         for ex in examples:
             numfes = sum([len(ex.invertedfes[fi]) for fi in ex.invertedfes if fi != notanfe]) + 1  # num(FEs + frame)
-            frame = c9.FRAMEDICT.getstr(ex.frame.id)
-            lu = c9.LUDICT.getstr(ex.lu.id) + "." + c9.LUPOSDICT.getstr(ex.lu.posid)
+            frame = FRAMEDICT.getstr(ex.frame.id)
+            lu = LUDICT.getstr(ex.lu.id) + "." + LUPOSDICT.getstr(ex.lu.posid)
             tfkeys = sorted(ex.targetframedict.keys())
             tfpos = str(tfkeys[0])
-            target = c9.VOCDICT.getstr(ex.tokens[tfkeys[0]])
+            target = VOCDICT.getstr(ex.tokens[tfkeys[0]])
 
             # multi-token targets
             if len(tfkeys) > 1:
                 tfpos += "_" + str(tfkeys[-1])
             for tpos in tfkeys[1:]:
-                target += " " + c9.VOCDICT.getstr(ex.tokens[tpos])
+                target += " " + VOCDICT.getstr(ex.tokens[tpos])
 
             outf.write("1\t0.0\t"
                        + str(numfes) + "\t"
@@ -38,7 +39,7 @@ def convert_conll_to_frame_elements(conllfile, fefile):
                        + str(ex.sent_num) + "\t")
 
             for fe in ex.invertedfes:
-                festr = c9.FEDICT.getstr(fe)
+                festr = FEDICT.getstr(fe)
                 if festr == EMPTY_FE:
                     continue
 
@@ -73,8 +74,8 @@ def count_frame_elements(fefile):
                 if spanlen > 20:
                     haslongerspans = True
         fef.close()
-    print "#FEs =", numfes / 2
-    print "contains longer spans?", haslongerspans
+    print("#FEs =", numfes / 2)
+    print("contains longer spans?", haslongerspans)
 
 
 def detail_read_fe_file(fefile):
@@ -98,7 +99,7 @@ def detail_read_fe_file(fefile):
                 for x in xrange(8, len(fields), 2):
                     fefield, fespan = fields[x:x + 2]
                     if fefield in fes:
-                        print "discontinous FEs found in ", fields[2:]
+                        print("discontinous FEs found in ", fields[2:])
                         exwithdiscontfe += 1
                     else:
                         fes[fefield] = []
@@ -142,23 +143,23 @@ def compare_fefiles(fefile1, fefile2):
             raise Exception("different frames in sent ", sent, framel1[sent], framel2[sent])
         for key in tf1:
             if key not in tf2:
-                print "where is this frame in " + fefile2 + " ", sent, key, tf1[key]
+                print("where is this frame in " + fefile2 + " ", sent, key, tf1[key])
         for key in tf2:
             if key not in tf1:
-                print "where is this frame in " + fefile1 + " ", sent, key, tf2[key]
+                print("where is this frame in " + fefile1 + " ", sent, key, tf2[key])
 
         # they have same frames
         for key in tf1:
             if key not in tf2: continue
             if len(tf1[key]) != len(tf2[key]):
-                print "different number of FEs!", sent, key, tf1[key], tf2[key]
+                print("different number of FEs!", sent, key, tf1[key], tf2[key])
             for fe in tf1[key]:
                 if fe not in tf2[key]:
-                    print "missing FE in " + fefile2 + " ", sent, fe, tf1[key]
+                    print("missing FE in " + fefile2 + " ", sent, fe, tf1[key])
 
             for fe in tf2[key]:
                 if fe not in tf1[key]:
-                    print "missing FE in " + fefile1 + " ", sent, fe, tf2[key]
+                    print("missing FE in " + fefile1 + " ", sent, fe, tf2[key])
 
             # they have same fes
             for fe in tf2[key]:

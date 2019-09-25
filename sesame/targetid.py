@@ -68,7 +68,7 @@ post_train_lock_dicts()
 
 # Read pretrained word embeddings.
 pretrained_map = get_wvec_map()
-PRETRAINED_DIM = len(pretrained_map.values()[0])
+PRETRAINED_DIM = len(list(pretrained_map.values())[0])
 
 lock_dicts()
 UNKTOKEN = VOCDICT.getid(UNK)
@@ -264,7 +264,7 @@ def identify_targets(builders, tokens, postags, lemmas, gold_targets=None):
     lem_x = [l_x[lem] for lem in lemmas]
 
     emb2_xi = []
-    for i in xrange(sentlen):
+    for i in range(sentlen):
         if tokens[i] in pretrained_map:
             # Prevent the pretrained embeddings from being updated.
             emb_without_backprop = lookup(e_x, tokens[i], update=False)
@@ -273,7 +273,7 @@ def identify_targets(builders, tokens, postags, lemmas, gold_targets=None):
             features_at_i = concatenate([emb_x[i], pos_x[i], lem_x[i], u_x])
         emb2_xi.append(w_e * features_at_i + b_e)
 
-    emb2_x = [rectify(emb2_xi[i]) for i in xrange(sentlen)]
+    emb2_x = [rectify(emb2_xi[i]) for i in range(sentlen)]
 
     # Initializing the two LSTMs.
     if USE_DROPOUT and train_mode:
@@ -286,7 +286,7 @@ def identify_targets(builders, tokens, postags, lemmas, gold_targets=None):
 
     losses = []
     predicted_targets = {}
-    for i in xrange(sentlen):
+    for i in range(sentlen):
         if not check_if_potential_target(lemmas[i]):
             continue
         h_i = concatenate([fw_x[i], bw_x[sentlen - i - 1]])
@@ -339,7 +339,7 @@ if options.mode in ["train", "refresh"]:
 
     last_updated_epoch = 0
 
-    for epoch in xrange(NUM_EPOCHS):
+    for epoch in range(NUM_EPOCHS):
         random.shuffle(combined_train)
         for idx, trex in enumerate(combined_train, 1):
             if idx % EVAL_EVERY_EPOCH == 0:
